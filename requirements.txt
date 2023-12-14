@@ -1,2 +1,6 @@
 django
-dajngo-
+django-cors-headers
+djangorestframework
+djangorestframework-simplejwt
+django-filter
+django-ordered-model
