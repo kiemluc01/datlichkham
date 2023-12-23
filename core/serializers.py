@@ -40,9 +40,26 @@ class ProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ["id", "name", "phone", "email", "created_at", "updated_at"]
+        fields = ["id", "name", "phone", "email", "role", "doctor_infor","created_at", "updated_at"]
         extra_kwargs = {
             "id": {"read_only": True},
             "created_at": {"read_only": True},
             "updated_at": {"read_only": True},
         }
+
+class RegisterSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(required=True)
+    name = serializers.CharField()
+    
+    class Meta:
+        model = User
+        fields = ["id", "email", "name", "password"]
+
+    def validate(self, data):
+        if User.objects.filter(email=data["email"]).exists():
+            raise serializers.ValidationError("Email is already exists!")
+        return data
+
+class GPTSerializer(serializers.Serializer):
+    user_input = serializers.CharField()

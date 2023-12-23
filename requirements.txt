@@ -4,4 +4,3 @@ djangorestframework
 djangorestframework-simplejwt
 django-filter
 django-ordered-model
-whitenoise

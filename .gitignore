@@ -1,7 +1,11 @@
 .env/
-app/__pycache__/
-app/migrations/__pycache__/
-core/__pycache__/
-core/migrations/__pycache__/
-datlichkham/__pycache__/
+app/__pycache__
+app/migrations/__pycache__
+core/__pycache__
+core/migrations/__pycache__
+datlichkham/__pycache__
+post/migrations/__pycache__
+post/__pycache__
+dental/__pycache__
+dental/migrations/__pycache__
 *.sqlite3

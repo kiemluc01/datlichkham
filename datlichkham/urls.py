@@ -22,11 +22,42 @@ from rest_framework_simplejwt.views import (
 )
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework.routers import DefaultRouter
 
-urlpatterns = [
+from core.views import RegisterAPIView, GetPostFromGPTAPIView, RoleView, ProfileView
+from post.views import PostView, CategoryView
+router = DefaultRouter()
+##### Role #####
+router.register('api/core/roles', RoleView, basename="roles"),
+##### Role #####
+
+##### Post #####
+router.register('api/post/categories', CategoryView, basename="categories"),
+router.register('api/post/posts', PostView, basename="posts"),
+##### Post #####
+
+
+urlpatterns =router.urls + [
     path('admin/', admin.site.urls),
+    
+    ########### core urls ##########
+    
+    ##### auth #####
     path('api/auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/auth/token/register', RegisterAPIView.as_view(), name="register"),
+    ##### auth #####
+    
+    ##### GPT #####
+    path('api/openAI/GPT/get-response-by-text', GetPostFromGPTAPIView.as_view(), name='GPT_openai'),
+    ##### GPT #####
+    
+    ##### Profile #####
+    path('api/users/profile', ProfileView.as_view(), name='profile'),
+    ##### Profile #####
+    
+    ########### core urls ##########
 ]
-urlpatterns += static('/static/', document_root=settings.STATIC_ROOT)
-urlpatterns += static('/media/', document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
