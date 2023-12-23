@@ -40,15 +40,24 @@ class UserManager(BaseUserManager):
 
     def get_by_natural_key(self, username):
         return self.get(**{"email__iexact": username})
+
+ROLE_CHOSE = (
+    (1, "ADMIN"),
+    (2, "CUSTOMER"),
+    (3, "DOCTOR"),
+)
 class Role(BaseModel):
-    name = models.CharField(max_length=150)
+    name = models.IntegerField(choices=ROLE_CHOSE, default=2, unique=True)
 
 class User(AbstractUser, BaseModel):
     username = None
-    name = models.CharField(max_length=150)
-    phone = models.CharField(max_length=11, null=True)
+    first_name = None
+    last_name = None
+    name = models.CharField(max_length=150, blank=True, null=True)
+    image = models.FileField(max_length=255, null=True, blank=True)
+    phone = models.CharField(max_length=11, null=True, blank=True)
     email = models.EmailField(max_length=254, null=True, unique=True)
-    role = models.ForeignKey(Role, related_name="role", on_delete=models.CASCADE, null=True)
+    role = models.OneToOneField(Role, related_name="role", on_delete=models.CASCADE, null=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
     objects = UserManager()
@@ -59,5 +68,5 @@ class User(AbstractUser, BaseModel):
 
 class DoctorInfor(BaseModel):
     user = models.OneToOneField(User, related_name="doctor_infor" , on_delete=models.CASCADE)
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150, null=True)
     degree_infor = models.TextField(null=True)

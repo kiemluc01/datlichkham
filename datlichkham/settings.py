@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from openai import OpenAI
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,6 +47,8 @@ INSTALLED_APPS = [
     
     'core',
     'app',
+    'post',
+    'dental',
 ]
 
 MIDDLEWARE = [
@@ -124,7 +127,7 @@ REST_FRAMEWORK = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
 
 USE_I18N = True
 
@@ -138,10 +141,17 @@ STATIC_URL = 'static/'
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 STATIC_DIR = BASE_DIR / 'static'
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT = BASE_DIR / ''
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
+# GPT CLient
+GPT_API_KEY = "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"
+GPT_CLIENT = OpenAI(
+    organization='org-OzYq9NnGqt9YmW3NtXxHHyiQ',
+    api_key=GPT_API_KEY
+)
