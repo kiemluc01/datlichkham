@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from openai import OpenAI
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # CORS config
-CORS_ALLOWED_ORIGINS = ["http://localhost:8000", "http://localhost:8005", "http://localhost:3000", "https://fair-hotels-mate.loca.lt"]
+CORS_ALLOWED_ORIGINS = ["http://localhost:8000", "http://localhost:3000", "https://six-points-watch.loca.lt"]
 CORS_ALLOW_HEADERS = ["Content-Type", "Accept", "Authorization", "organization"]
 
 
@@ -44,6 +45,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework_simplejwt',
     'rest_framework',
+    'rest_framework.permissions',
+    'rest_framework.authtoken',
+    'corsheaders',
     
     'core',
     'app',
@@ -51,15 +55,34 @@ INSTALLED_APPS = [
     'dental',
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True # If this is used then `CORS_ALLOWED_ORIGINS` will not have any effect
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'https://six-points-watch.loca.lt',
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    # 'http://localhost:3000',
+    # 'https://six-points-watch.loca.lt',
+    '*'
+]
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     # 'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+MIDDLEWARE_CLASSES = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "corsheaders.middleware.CorsPostCsrfMiddleware",
 ]
 
 ROOT_URLCONF = 'datlichkham.urls'
@@ -113,14 +136,25 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+REST_FRAMEWORK ={
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny'
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ]
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication'
+        
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.OrderingFilter',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE':10,
 }
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -150,7 +184,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # GPT CLient
-GPT_API_KEY = "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"
+GPT_API_KEY = "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"
 GPT_CLIENT = OpenAI(
     organization='org-OzYq9NnGqt9YmW3NtXxHHyiQ',
     api_key=GPT_API_KEY

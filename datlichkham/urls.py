@@ -26,6 +26,7 @@ from rest_framework.routers import DefaultRouter
 
 from core.views import RegisterAPIView, GetPostFromGPTAPIView, RoleView, ProfileView
 from post.views import PostView, CategoryView
+from app.views import BookingView
 router = DefaultRouter()
 ##### Role #####
 router.register('api/core/roles', RoleView, basename="roles"),
@@ -36,6 +37,11 @@ router.register('api/post/categories', CategoryView, basename="categories"),
 router.register('api/post/posts', PostView, basename="posts"),
 ##### Post #####
 
+##### app #####
+router.register('api/app/bookings', BookingView, basename="bookings"),
+# router.register('api/app/posts', PostView, basename="posts"),
+##### app #####
+
 
 urlpatterns =router.urls + [
     path('admin/', admin.site.urls),
@@ -45,7 +51,7 @@ urlpatterns =router.urls + [
     ##### auth #####
     path('api/auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/auth/token/register', RegisterAPIView.as_view(), name="register"),
+    path('api/auth/token/register/', RegisterAPIView.as_view(), name="register"),
     ##### auth #####
     
     ##### GPT #####
@@ -53,7 +59,7 @@ urlpatterns =router.urls + [
     ##### GPT #####
     
     ##### Profile #####
-    path('api/users/profile', ProfileView.as_view(), name='profile'),
+    path('api/users/me', ProfileView.as_view(), name='profile'),
     ##### Profile #####
     
     ########### core urls ##########

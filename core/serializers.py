@@ -50,11 +50,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(required=True)
-    name = serializers.CharField()
-    
+    name = serializers.CharField(required=False)
+    phone = serializers.CharField()
     class Meta:
         model = User
-        fields = ["id", "email", "name", "password"]
+        fields = ["id", "email", "name", "phone", "password"]
 
     def validate(self, data):
         if User.objects.filter(email=data["email"]).exists():

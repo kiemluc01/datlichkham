@@ -57,7 +57,7 @@ class User(AbstractUser, BaseModel):
     image = models.FileField(max_length=255, null=True, blank=True)
     phone = models.CharField(max_length=11, null=True, blank=True)
     email = models.EmailField(max_length=254, null=True, unique=True)
-    role = models.OneToOneField(Role, related_name="role", on_delete=models.CASCADE, null=True)
+    role = models.ForeignKey(Role, related_name="role", on_delete=models.CASCADE, null=True)
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
     objects = UserManager()
