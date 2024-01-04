@@ -5,8 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .services import getResponseGPTFromText
-from .serializers import RegisterSerializer, ProfileSerializer, RoleSerializer, DoctorInforSerializer, GPTSerializer
-from .models import User, DoctorInfor, Role
+from .serializers import RegisterSerializer, ProfileSerializer, RoleSerializer, DoctorSerializer, GPTSerializer
+from .models import User, Doctor, Role
 
 
 class RegisterAPIView(GenericAPIView):
@@ -24,7 +24,6 @@ class RegisterAPIView(GenericAPIView):
                 role=role,
                 is_staff=True,
             )
-            DoctorInfor.objects.create(user=user)
             return Response(ProfileSerializer(user).data, status=status.HTTP_201_CREATED)
 class ProfileView(APIView):
     serializer_class = ProfileSerializer
@@ -40,9 +39,9 @@ class RoleView(viewsets.ModelViewSet):
     queryset = Role.objects.all()
     # permission_classes = [IsAuthenticated]
 
-class DoctorInforView(viewsets.ModelViewSet):
-    serializer_class = DoctorInforSerializer
-    queryset = DoctorInfor.objects.all()
+class DoctorView(viewsets.ModelViewSet):
+    serializer_class = DoctorSerializer
+    queryset = Doctor.objects.all()
 
 
 class GetPostFromGPTAPIView(GenericAPIView):

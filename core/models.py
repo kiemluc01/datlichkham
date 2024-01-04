@@ -66,7 +66,10 @@ class User(AbstractUser, BaseModel):
         db_table = u'user'
 
 
-class DoctorInfor(BaseModel):
-    user = models.OneToOneField(User, related_name="doctor_infor" , on_delete=models.CASCADE)
+class Doctor(BaseModel):
     name = models.CharField(max_length=150, null=True)
     degree_infor = models.TextField(null=True)
+
+class DoctorDetail(BaseModel):
+    doctor = models.ForeignKey("core.Doctor", related_name="doctor_detail", on_delete=models.CASCADE)
+    image = models.FileField(upload_to=None, max_length=255)

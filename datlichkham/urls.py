@@ -26,7 +26,8 @@ from rest_framework.routers import DefaultRouter
 
 from core.views import RegisterAPIView, GetPostFromGPTAPIView, RoleView, ProfileView
 from post.views import PostView, CategoryView
-from app.views import BookingView
+from app.views import BookingView, NotificationView, RetriveNotificationView
+from dental.views import DentalBrachView, DentalInfoView, DentalZoneView
 router = DefaultRouter()
 ##### Role #####
 router.register('api/core/roles', RoleView, basename="roles"),
@@ -39,11 +40,15 @@ router.register('api/post/posts', PostView, basename="posts"),
 
 ##### app #####
 router.register('api/app/bookings', BookingView, basename="bookings"),
-# router.register('api/app/posts', PostView, basename="posts"),
 ##### app #####
 
+##### dental #####
+router.register('api/dental/branches', DentalBrachView, basename="branches"),
+router.register('api/dental/infor', DentalInfoView, basename="info"),
+router.register('api/dental/zones', DentalZoneView, basename="zones"),
+##### dental #####
 
-urlpatterns =router.urls + [
+urlpatterns =router.urls +[
     path('admin/', admin.site.urls),
     
     ########### core urls ##########
@@ -61,6 +66,9 @@ urlpatterns =router.urls + [
     ##### Profile #####
     path('api/users/me', ProfileView.as_view(), name='profile'),
     ##### Profile #####
+    
+    path('api/app/notifications', NotificationView.as_view(), name='notifications'),
+    path('api/app/notifications/<str:pk>', RetriveNotificationView.as_view(), name='notification_update'),
     
     ########### core urls ##########
 ]
