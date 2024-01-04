@@ -9,6 +9,7 @@ class CategoryView(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
     permission_classes = [AllowAny,]
+    pagination_class = None
 
 class PostView(viewsets.ModelViewSet):
     serializer_class = PostSerializer

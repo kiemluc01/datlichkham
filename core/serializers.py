@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Role, DoctorInfor
+from .models import User, Role, Doctor, DoctorDetail
 
 
 # class serializer dùng để validate data và show data
@@ -24,9 +24,14 @@ class RoleSerializer(serializers.ModelSerializer):
             "updated_at": {"read_only": True},
         }
 
-class DoctorInforSerializer(serializers.ModelSerializer):
+class DoctorDetailSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DoctorInfor
+        model = DoctorDetail
+        fields = '__all__'
+class DoctorSerializer(serializers.ModelSerializer):
+    doctor_detail = DoctorDetailSerializer(many=True, read_only=True)
+    class Meta:
+        model = Doctor
         fields = "__all__"
         extra_kwargs = {
             "id": {"read_only": True},
@@ -36,11 +41,10 @@ class DoctorInforSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     role = RoleSerializer(read_only=True)
-    doctor_infor = DoctorInforSerializer(read_only=True)
     
     class Meta:
         model = User
-        fields = ["id", "name", "phone", "email", "role", "doctor_infor","created_at", "updated_at"]
+        fields = ["id", "name", "phone", "email", "role","created_at", "updated_at"]
         extra_kwargs = {
             "id": {"read_only": True},
             "created_at": {"read_only": True},

@@ -12,6 +12,7 @@ class DentalBraches(BaseModel):
     phone = models.CharField(max_length=11, null=True)
 
 class DentalInfor(BaseModel):
+    dental_branch = models.ForeignKey(DentalBraches, related_name="dental_branch_info", on_delete=models.CASCADE, null=True)
     fields = models.CharField(max_length=255, null=True)
     values = models.TextField(null=True)
 

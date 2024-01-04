@@ -4,3 +4,4 @@ djangorestframework
 djangorestframework-simplejwt
 django-filter
 django-ordered-model
+drf-nested-routers
