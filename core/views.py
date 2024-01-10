@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .services import getResponseGPTFromText
 from .serializers import RegisterSerializer, ProfileSerializer, RoleSerializer, DoctorSerializer, GPTSerializer
-from .models import User, Doctor, Role
+from .models import User, Doctor, Role, DoctorDetail
 
 
 class RegisterAPIView(GenericAPIView):
@@ -27,7 +27,7 @@ class RegisterAPIView(GenericAPIView):
             return Response(ProfileSerializer(user).data, status=status.HTTP_201_CREATED)
 class ProfileView(APIView):
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -37,16 +37,51 @@ class ProfileView(APIView):
 class RoleView(viewsets.ModelViewSet):
     serializer_class = RoleSerializer
     queryset = Role.objects.all()
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
 class DoctorView(viewsets.ModelViewSet):
     serializer_class = DoctorSerializer
     queryset = Doctor.objects.all()
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        images=[]
+        if "images" in request.data:
+            images = request.data.pop("images")
+        serializer = self.serializer_class(
+            data=request.data
+        )
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            for image in images:
+                DoctorDetail.objects.create(
+                    doctor=serializer.instance,
+                    image=image
+                )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def update(self, request, *args, **kwargs):
+        images=[]
+        object = self.get_object()
+        if "images" in request.data:
+            images = request.data.pop("images")
+        serializer = self.serializer_class(
+            instance=object,data=request.data
+        )
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            DoctorDetail.objects.filter(doctor=serializer.instance).delete()
+            for image in images:
+                DoctorDetail.objects.create(
+                    doctor=serializer.instance,
+                    image=image
+                )
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class GetPostFromGPTAPIView(GenericAPIView):
     serializer_class = GPTSerializer
-    permission_classes = [AllowAny,]
+    permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(

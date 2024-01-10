@@ -25,8 +25,7 @@ SECRET_KEY = 'django-insecure-k@)lrhj@n@k_p_%0i!5_41g7r*5t(9=!%rl7n1y5_iv9euk1b#
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-APPEND_SLASH=True
+APPEND_SLASH=False
 
 ALLOWED_HOSTS = ['*']
 
@@ -149,6 +148,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 REST_FRAMEWORK ={
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny'
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
@@ -188,7 +191,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # GPT CLient
-GPT_API_KEY = "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"
+GPT_API_KEY = "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"
 GPT_CLIENT = OpenAI(
     organization='org-OzYq9NnGqt9YmW3NtXxHHyiQ',
     api_key=GPT_API_KEY

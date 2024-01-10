@@ -24,28 +24,35 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 
-from core.views import RegisterAPIView, GetPostFromGPTAPIView, RoleView, ProfileView
+from core.views import RegisterAPIView, GetPostFromGPTAPIView, RoleView, ProfileView, DoctorView
 from post.views import PostView, CategoryView
-from app.views import BookingView, NotificationView, RetriveNotificationView
-from dental.views import DentalBrachView, DentalInfoView, DentalZoneView
+from app.views import BookingView, NotificationView, RetriveNotificationView, MenuView, MenuItemView
+from dental.views import DentalBrachView, DentalInfoView, DentalZoneView, RoomView
 router = DefaultRouter()
 ##### Role #####
 router.register('api/core/roles', RoleView, basename="roles"),
 ##### Role #####
 
+##### Doctor #####
+router.register('api/core/doctors', DoctorView, basename="doctor"),
+##### Doctor #####
+
 ##### Post #####
-router.register('api/post/categories', CategoryView, basename="categories"),
-router.register('api/post/posts', PostView, basename="posts"),
+router.register(r'api/post/categories', CategoryView, basename="categories"),
+router.register(r'api/post/posts', PostView, basename="posts"),
 ##### Post #####
 
 ##### app #####
-router.register('api/app/bookings', BookingView, basename="bookings"),
+router.register(r'api/app/bookings', BookingView, basename="bookings"),
+router.register(r'api/app/menus', MenuView, basename="menu"),
+router.register(r'api/app/menu-items', MenuItemView, basename="menu_item"),
 ##### app #####
 
 ##### dental #####
-router.register('api/dental/branches', DentalBrachView, basename="branches"),
-router.register('api/dental/infor', DentalInfoView, basename="info"),
-router.register('api/dental/zones', DentalZoneView, basename="zones"),
+router.register(r'api/dental/branches', DentalBrachView, basename="branches"),
+router.register(r'api/dental/infor', DentalInfoView, basename="info"),
+router.register(r'api/dental/zones', DentalZoneView, basename="zones"),
+router.register(r'api/dental/rooms', RoomView, basename="room"),
 ##### dental #####
 
 urlpatterns =router.urls +[
