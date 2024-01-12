@@ -44,7 +44,6 @@ class UserManager(BaseUserManager):
 ROLE_CHOSE = (
     (1, "ADMIN"),
     (2, "CUSTOMER"),
-    (3, "DOCTOR"),
 )
 class Role(BaseModel):
     name = models.IntegerField(choices=ROLE_CHOSE, default=2, unique=True)

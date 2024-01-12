@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from datetime import datetime
 
 from .services import getResponseGPTFromText
 from .serializers import RegisterSerializer, ProfileSerializer, RoleSerializer, DoctorSerializer, GPTSerializer
@@ -43,11 +44,19 @@ class DoctorView(viewsets.ModelViewSet):
     serializer_class = DoctorSerializer
     queryset = Doctor.objects.all()
     permission_classes = [AllowAny]
+    
+    def list(self, request):
+        list_all = self.request.query_params.get("all", None)
+        if list_all:
+            doctor = Doctor.objects.all()
+            return Response(DoctorSerializer(doctor, many=True).data)
+        return super().list(request)
 
     def create(self, request, *args, **kwargs):
         images=[]
         if "images" in request.data:
             images = request.data.pop("images")
+        request.data['DoB'] = datetime.fromtimestamp(request.data['DoB'])
         serializer = self.serializer_class(
             data=request.data
         )
@@ -65,6 +74,7 @@ class DoctorView(viewsets.ModelViewSet):
         object = self.get_object()
         if "images" in request.data:
             images = request.data.pop("images")
+        request.data['DoB'] = datetime.fromtimestamp(request.data['DoB'])
         serializer = self.serializer_class(
             instance=object,data=request.data
         )

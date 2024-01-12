@@ -1,5 +1,4 @@
 from rest_framework import viewsets, status
-from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from datetime import datetime
@@ -7,7 +6,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 import django_filters
 
 from .models import *
-from .serializers import MenuItemSerializer, MenuSerializer, BookingSerializer, NotificationSerializer
+from .serializers import MenuItemSerializer, MenuSerializer, BookingSerializer, NotificationSerializer, ReadBookingSerializer
+from core.serializers import CustomerSerializer
+from core.models import User
 
 
 class MenuView(viewsets.ModelViewSet):
@@ -16,27 +17,31 @@ class MenuView(viewsets.ModelViewSet):
     permission_classes = [AllowAny,]
     pagination_class = None
 
+class MenuItemFilter(django_filters.FilterSet):
+    menu = django_filters.CharFilter(field_name='menu')
 class MenuItemView(viewsets.ModelViewSet):
     serializer_class = MenuItemSerializer
     queryset = MenuItem.objects.all()
     permission_classes = [AllowAny,]
     pagination_class = None
+    filterset_class = MenuItemFilter
 
 class BookingFilter(django_filters.FilterSet):
     status = django_filters.CharFilter(field_name="status")
 class BookingView(viewsets.ModelViewSet):
-    serializer_class = BookingSerializer
+    serializer_class = ReadBookingSerializer
     queryset = Booking.objects.all()
-    permission_classes = [AllowAny,]
+    permission_classes = [IsAuthenticated,]
     filterset_class = BookingFilter
+    ordering = ["-created_at"]
 
     def create(self, request):
         request.data["date"] = datetime.fromtimestamp(request.data["date"])
-        serializer = self.serializer_class(
+        serializer = BookingSerializer(
             data=request.data
         )
         if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user, status="chưa khám")
+            serializer.save(user=self.request.user, status="chưa khám")
             status_no = 'new' if self.request.user.role.name == 2 else 'read'
             Notification.objects.create(booking=serializer.instance, status=status_no)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -46,6 +51,7 @@ class NotificationView(ListAPIView):
     serializer_class = NotificationSerializer
     permission_classes = [AllowAny,]
     pagination_class = None
+    ordering = ['-created_at']
 
 class RetriveNotificationView(RetrieveUpdateAPIView):
     queryset = Notification.objects.all()
@@ -57,3 +63,13 @@ class RetriveNotificationView(RetrieveUpdateAPIView):
         object.status = 'read'
         object.save()
         return Response(self.serializer_class(object).data)
+
+class CustomerView(ListAPIView):
+    serializer_class = CustomerSerializer
+    permission_classes = [AllowAny,]
+    queryset = User.objects.all()
+
+    def get_queryset(self):
+        return self.queryset.filter(
+            role__name=2
+        )

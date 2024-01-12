@@ -67,3 +67,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class GPTSerializer(serializers.Serializer):
     user_input = serializers.CharField()
+
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'name', 'image', 'email', 'phone']

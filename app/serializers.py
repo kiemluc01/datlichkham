@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from .models import *
 from core.serializers import ProfileSerializer
+from dental.serializers import DetailRoomSerializer
 
 
 class MenuSerializer(serializers.ModelSerializer):
@@ -14,11 +15,24 @@ class MenuItemSerializer(serializers.ModelSerializer):
         model = MenuItem
         fields = "__all__"
 
-class BookingSerializer(serializers.ModelSerializer):
-    user = ProfileSerializer()
+class ReadMenuItemSerializer(serializers.ModelSerializer):
+    menu = MenuSerializer(read_only=True)
+    class Meta:
+        model = MenuItem
+        fields = "__all__"
 
-    # def validate(self, data):
-        
+class ReadBookingSerializer(serializers.ModelSerializer):
+    user = ProfileSerializer(read_only=True)
+    room = DetailRoomSerializer(read_only=True)
+    item = ReadMenuItemSerializer(read_only=True)
+    class Meta:
+        model = Booking
+        fields = "__all__"
+        extra_kwargs = {
+            "user": {"read_only": True},
+        }
+
+class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
         fields = "__all__"

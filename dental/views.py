@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 import django_filters 
 from rest_framework.response import Response
 
-from .serializers import DentalBranchesSerializer, DentalZoneSerializer, DentalInforSerializer, RoomSerializer
+from .serializers import ReadDentalBranchesSerializer, DentalZoneSerializer, DentalInforSerializer, RoomSerializer, CreateDentalBranchesSerializer
 from .models import DentalZone, DentalBraches, DentalInfor, Room
 
 
@@ -11,14 +11,20 @@ class FiterBranch(django_filters.FilterSet):
     name = django_filters.CharFilter(field_name="name")
 class DentalBrachView(viewsets.ModelViewSet):
     queryset = DentalBraches.objects.all()
-    serializer_class = DentalBranchesSerializer
+    serializer_class = ReadDentalBranchesSerializer
     permission_classes = [AllowAny]
     filterset_class = FiterBranch
 
+    def list(self, request):
+        list_all = self.request.query_params.get("all", None)
+        if list_all:
+            doctor = DentalBraches.objects.all()
+            return Response(self.serializer_class(doctor, many=True).data)
+        return super().list(request)
+
     def create(self, request, *args, **kwargs):
-        print(request.data)
         rooms = request.data.pop("branch_room")
-        serializer = self.serializer_class(
+        serializer = CreateDentalBranchesSerializer(
             data=request.data
         )
         if serializer.is_valid(raise_exception=True):
