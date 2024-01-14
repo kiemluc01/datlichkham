@@ -4,9 +4,10 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from datetime import datetime
+import base64
 
 from .services import getResponseGPTFromText
-from .serializers import RegisterSerializer, ProfileSerializer, RoleSerializer, DoctorSerializer, GPTSerializer
+from .serializers import RegisterSerializer, ProfileSerializer, RoleSerializer, DoctorSerializer, GPTSerializer, UpdateProfileSerializer
 from .models import User, Doctor, Role, DoctorDetail
 
 
@@ -22,17 +23,25 @@ class RegisterAPIView(GenericAPIView):
                 email=serializer.validated_data.get("email"),
                 password=serializer.validated_data.get("password"),
                 phone=serializer.validated_data.get("phone"),
+                name=serializer.validated_data.get("name"),
                 role=role,
                 is_staff=True,
             )
             return Response(ProfileSerializer(user).data, status=status.HTTP_201_CREATED)
 class ProfileView(APIView):
     serializer_class = ProfileSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated,]
     
     def get(self, request, *args, **kwargs):
         user = request.user
         return Response(self.serializer_class(user).data)
+    
+    def put(self, request):
+        user = request.user
+        serializer = UpdateProfileSerializer(user, request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
 
 
 class RoleView(viewsets.ModelViewSet):
@@ -54,9 +63,9 @@ class DoctorView(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         images=[]
-        if "images" in request.data:
-            images = request.data.pop("images")
-        request.data['DoB'] = datetime.fromtimestamp(request.data['DoB'])
+        if "images[]" in request.data:
+            images = request.data.pop("images[]")
+        request.data['DoB'] = datetime.fromtimestamp(int(request.data['DoB']))
         serializer = self.serializer_class(
             data=request.data
         )
@@ -72,9 +81,9 @@ class DoctorView(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         images=[]
         object = self.get_object()
-        if "images" in request.data:
-            images = request.data.pop("images")
-        request.data['DoB'] = datetime.fromtimestamp(request.data['DoB'])
+        if "images[]" in request.data:
+            images = request.data.pop("images[]")
+        request.data['DoB'] = datetime.fromtimestamp(int(request.data['DoB']))
         serializer = self.serializer_class(
             instance=object,data=request.data
         )

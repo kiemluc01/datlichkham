@@ -53,7 +53,10 @@ class User(AbstractUser, BaseModel):
     first_name = None
     last_name = None
     name = models.CharField(max_length=150, blank=True, null=True)
-    image = models.ImageField(null=True, blank=True)
+    DoB = models.CharField(max_length=50, blank=True)
+    is_male = models.BooleanField(null=True, blank=True)
+    addr = models.CharField(max_length=255, blank=True, null=True)
+    image = models.FileField(upload_to='', max_length=255, null=True, blank=True)
     phone = models.CharField(max_length=11, null=True, blank=True)
     email = models.EmailField(max_length=254, null=True, unique=True)
     role = models.ForeignKey(Role, related_name="role", on_delete=models.CASCADE, null=True)
@@ -75,4 +78,4 @@ class Doctor(BaseModel):
 
 class DoctorDetail(BaseModel):
     doctor = models.ForeignKey("core.Doctor", related_name="doctor_detail", on_delete=models.CASCADE)
-    image = models.ImageField(blank=True, null=True)
+    image = models.FileField(upload_to='', max_length=255, null=True, blank=True)
