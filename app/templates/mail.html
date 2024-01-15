@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NHA KHOA THANH SƠN</title>
+  </head>
+  <body style="padding: 5px; margin: 0">
+    <header>
+      <center><img src="http://localhost:8000/media/logo.jpg" /></center>
+    </header>
+    <div
+      class="content"
+      style="width: 90%; margin-left: auto; margin-right: auto"
+    >
+      <h2>THÔNG BÁO ĐẶT LỊCH KHÁM</h2>
+      <p>Kính chào {{ email }}!</p>
+      <p>
+        Bạn đã đặt lịch khám thành công cho nha khoa Thanh Sơn trên hệ thống tại
+        chi nhánh {{ branch }}, phòng số {{ room }} vào lúc {{ curent_time }}
+      </p>
+      <p>Giờ khám: {{ time }}</p>
+      <p>Mục khám: {{ item }}</p>
+      <p>Số người: {{ quantity }}</p>
+      <p>
+        Kính mông quý khách đến đúng giờ theo thời gian đã đặt lịch để khỏi trở
+        ngại công việc chung
+      </p>
+      <p>Cảm ơn quý khách đã luôn tin tưởng và ủng hộ Nha khoa Thanh Sơn!</p>
+    </div>
+  </body>
+</html>
