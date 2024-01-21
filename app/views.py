@@ -5,6 +5,7 @@ from datetime import datetime
 from rest_framework.permissions import AllowAny, IsAuthenticated
 import django_filters
 from django.conf import settings
+from django.db.models import Q
 
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import  render_to_string
@@ -38,6 +39,24 @@ class BookingView(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated,]
     filterset_class = BookingFilter
     ordering = ["-created_at"]
+    search_field = ["user__name", "booking_name", "user__email"]
+    
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return ReadBookingSerializer
+        return BookingSerializer
+
+    def get_queryset(self):
+        search_value = self.request.query_params.get("search", None)
+        if search_value:
+            search = search_value.replace(" ", ".*")
+            print(search)
+            return self.queryset.filter(
+                Q(is_user=True, user__name__iregex=search) |
+                Q(is_user=False, booking_name__iregex=search) |
+                Q(is_user=True, user__email__contains=search_value)
+            )
+        return self.queryset
 
     def send_mail(self, email, time, branch, room, item, quantity):
         mail_from = settings.EMAIL_HOST_USER
@@ -79,7 +98,7 @@ class BookingView(viewsets.ModelViewSet):
                     serializer.instance.item.name,
                     serializer.instance.quantity
                 )
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(ReadBookingSerializer(serializer.instance).data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
         request.data["date"] = datetime.fromtimestamp(request.data["date"])
@@ -113,3 +132,35 @@ class CustomerView(ListAPIView):
         return self.queryset.filter(
             role__name=2
         )
+
+class ListUserBookingView(ListAPIView):
+    serializer_class = ReadBookingSerializer
+    model = Booking
+    queryset = Booking.objects.all()
+    permission_classes = [IsAuthenticated]
+    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        return self.queryset.filter(
+            user=self.request.user
+        )
+
+class RetriveUpdateBookingView(RetrieveUpdateAPIView):
+    serializer_class = ReadBookingSerializer
+    model = Booking
+    queryset = Booking.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.role.name == 1:
+            return self.queryset
+        return self.queryset.filter(
+            user=self.request.user
+        )
+
+    def update(self, request, *args, **kwargs):
+        obj = self.get_object()
+        obj.status = "đã huỷ"
+        obj.save()
+        Notification.objects.create(booking=obj, status="cancel")
+        return Response(self.serializer_class(obj).data)

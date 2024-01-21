@@ -25,11 +25,16 @@ class ReadBookingSerializer(serializers.ModelSerializer):
     user = ProfileSerializer(read_only=True)
     room = DetailRoomSerializer(read_only=True)
     item = ReadMenuItemSerializer(read_only=True)
+    total_money = serializers.SerializerMethodField(read_only=True)
+    
+    def get_total_money(self, obj):
+        return obj.incurred + obj.item.price * obj.quantity
     class Meta:
         model = Booking
         fields = "__all__"
         extra_kwargs = {
             "user": {"read_only": True},
+            "total_money": {"read_only": True},
         }
 
 class BookingSerializer(serializers.ModelSerializer):
@@ -38,10 +43,12 @@ class BookingSerializer(serializers.ModelSerializer):
         fields = "__all__"
         extra_kwargs = {
             "user": {"read_only": True},
+            "total_money": {"read_only": True},
         }
 
 class NotificationSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField()
+    booking = BookingSerializer(read_only=True)
     
     def get_name(self, object):
         if not object.booking.is_user:

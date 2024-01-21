@@ -20,6 +20,7 @@ class Booking(BaseModel):
     date = models.DateTimeField(null=True)
     quantity = models.IntegerField(default=1)
     item = models.ForeignKey("app.MenuItem", related_name="booking_item", on_delete=models.CASCADE, null=True)
+    incurred = models.IntegerField(default=0, blank=True)
     total_money = models.IntegerField(default=0, blank=True)
     status = models.CharField(max_length=150, blank=True, default="chưa khám")
     reason = models.CharField(max_length=255)
