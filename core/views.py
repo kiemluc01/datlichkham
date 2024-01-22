@@ -4,7 +4,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from datetime import datetime
-import base64
+from django.db.models import Q
 
 from .services import getResponseGPTFromText
 from .serializers import RegisterSerializer, ProfileSerializer, RoleSerializer, DoctorSerializer, GPTSerializer, UpdateProfileSerializer
@@ -53,6 +53,17 @@ class DoctorView(viewsets.ModelViewSet):
     serializer_class = DoctorSerializer
     queryset = Doctor.objects.all()
     permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        search_val = self.request.query_params.get("search", None)
+        queryset = self.queryset
+        if search_val and search_val != '':
+            search = search_val.replace(' ', '.*')
+            queryset = queryset.filter(
+                Q(name__iregex=search) |
+                Q(email__contains=search_val)
+            )
+        return queryset
     
     def list(self, request):
         list_all = self.request.query_params.get("all", None)
