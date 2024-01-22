@@ -129,9 +129,16 @@ class CustomerView(ListAPIView):
     ordering = ['-created_at']
 
     def get_queryset(self):
-        return self.queryset.filter(
+        queryset = self.queryset.filter(
             role__name=2
         )
+        search = self.request.query_params.get("search", None)
+        if search and search != '':
+            search = search.replace(' ', '.*')
+            queryset = queryset.filter(
+                name__iregex=search
+            )
+        return queryset
 
 class ListUserBookingView(ListAPIView):
     serializer_class = ReadBookingSerializer

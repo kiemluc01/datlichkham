@@ -14,6 +14,16 @@ class DentalBrachView(viewsets.ModelViewSet):
     serializer_class = ReadDentalBranchesSerializer
     permission_classes = [AllowAny]
     filterset_class = FiterBranch
+    
+    def get_queryset(self):
+        search = self.request.query_params.get("search", None)
+        queryset = self.queryset
+        if search and search != '':
+            search = search.replace(' ', '.*')
+            queryset = queryset.filter(
+                name__iregex=search
+            )
+        return queryset
 
     def list(self, request):
         list_all = self.request.query_params.get("all", None)
